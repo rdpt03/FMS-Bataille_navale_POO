@@ -1,5 +1,4 @@
 from copy import deepcopy
-import pandas
 import string
 #"lf" means local to function
 
@@ -43,11 +42,14 @@ def are_all_boat_sunk(boat_list_lf):
     return True
 
 
-def check_and_hit_boat_position(boat_list_lf, shot_case):
+def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boats, failed_shots):
     """
     ths function will handle the hit to the boat
     :param boat_list_lf:  list of boats
     :param shot_case: the case attacked by the player
+    :param boat_shots: list of all shot that landed on a boat
+    :param sunken_boats: list of all sunken boats
+    :param failed_shots: list of failed shots that landed on the sea
     :return: n/a
     """
     #get global var
@@ -82,7 +84,7 @@ def check_and_hit_boat_position(boat_list_lf, shot_case):
                         #remove the cases from the shot list and add to the sunk list
                         for case_lf in boat_lf['cases']:
                             boat_shots.remove(case_lf['case_nb'])
-                            sunk_boats.append(case_lf['case_nb'])
+                            sunken_boats.append(case_lf['case_nb'])
                     #exit the program
                     return
     #if the hit failed (basicaccly no return where executed) (todo : test without condition alwasy to false
@@ -91,7 +93,7 @@ def check_and_hit_boat_position(boat_list_lf, shot_case):
 
 
 
-def render_table(failed_shots_lf, boat_shots_lf, sunk_boats_lf):
+def render_table(failed_shots_lf, boat_shots_lf, sunken_boats):
     #Create the table with panda
     #create the dictionary base
 
@@ -112,7 +114,7 @@ def render_table(failed_shots_lf, boat_shots_lf, sunk_boats_lf):
         data[bs[0].upper()][int(bs[1:])-1] = "#"
 
     #add the sunk boat to it
-    for sb in sunk_boats_lf:
+    for sb in sunken_boats:
         data[sb[0].upper()][int(sb[1:])-1] = "O"
 
     table_boat = ""
@@ -173,7 +175,7 @@ def main():
 
     # define the list for the shots
     failed_shots = []
-    sunk_boats = []
+    sunken_boats = []
     boat_shots = []
 
     # define the boats
@@ -210,7 +212,7 @@ def main():
     # execute in loop the game
     while True:
         # render the table with all shots
-        render_table(failed_shots, boat_shots, sunk_boats)
+        render_table(failed_shots, boat_shots, sunken_boats)
         # game message
         print('JEU : ' + var_msg)
         var_msg = 'n/a'
@@ -231,7 +233,7 @@ def main():
             boatlist = [aircraft_carrier, cruiser, destroyer, submarine, torpedo_boat]
 
             # check a boat at this case and if present hit it
-            check_and_hit_boat_position(boatlist, case)
+            check_and_hit_boat_position(boatlist, case, boat_shots, sunken_boats, failed_shots)
 
             # check if all boats are sunk
             if are_all_boat_sunk(boatlist):
