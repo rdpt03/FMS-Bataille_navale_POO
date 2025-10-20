@@ -165,12 +165,13 @@ def render_table(failed_shots_lf, boat_shots_lf, sunk_boats_lf):
     #print with pandas
     print(table_boat)
 
-if __name__ == '__main__':
-    #declare a global var to the message to the user and set initial text
-    global var_msg
-    var_msg = 'Bienvenue au jeu de bataille navale !'
 
-    #define the list for the shots
+def main():
+    # declare a global var to the message to the user and set initial text
+    global var_msg
+    #var_msg = 'Bienvenue au jeu de bataille navale !'
+
+    # define the list for the shots
     failed_shots = []
     sunk_boats = []
     boat_shots = []
@@ -182,7 +183,7 @@ if __name__ == '__main__':
     # define and add cases
     add_cases_to_boat(aircraft_carrier, ['B2', 'C2', 'D2', 'E2', 'F2'])
 
-    #cruiser
+    # cruiser
     cruiser = deepcopy(template_boat)
     cruiser['name'] = 'cruiser'
     # define and add cases
@@ -206,37 +207,41 @@ if __name__ == '__main__':
     # define and add cases
     add_cases_to_boat(torpedo_boat, ['E9', 'F9'])
 
-
-    #execute in loop the game
+    # execute in loop the game
     while True:
-        #render the table with all shots
+        # render the table with all shots
         render_table(failed_shots, boat_shots, sunk_boats)
-        #game message
-        print('JEU : '+var_msg)
+        # game message
+        print('JEU : ' + var_msg)
         var_msg = 'n/a'
         print('-' * 30)
-        #input
+        # input
         case = input('Inserer la case à ataquer : ').upper()
 
-        #check if the input case has between 2 and 3 chars, the first char is between A and J, and the 2 and 3 are digits, and the digits are between 1 and 10
+        # check if the input case has between 2 and 3 chars, the first char is between A and J, and the 2 and 3 are digits, and the digits are between 1 and 10
         if (
                 len(case) in (2, 3)
-                #and case[0].isalpha()
+                # and case[0].isalpha()
                 and case[0] in "ABCDEFGHIJ"
                 and case[1:].isdigit()
                 and 1 <= int(case[1:]) <= 10
         ):
 
-            #create boat list
-            boatlist = [aircraft_carrier,cruiser, destroyer, submarine, torpedo_boat]
+            # create boat list
+            boatlist = [aircraft_carrier, cruiser, destroyer, submarine, torpedo_boat]
 
-            #check a boat at this case and if present hit it
-            check_and_hit_boat_position(boatlist,case)
+            # check a boat at this case and if present hit it
+            check_and_hit_boat_position(boatlist, case)
 
-            #check if all boats are sunk
+            # check if all boats are sunk
             if are_all_boat_sunk(boatlist):
                 print('Bravo! vous avez detruit tous les bateaux')
                 break
-        #given any irregular case
+        # given any irregular case
         else:
             var_msg = 'case incorrecte'
+
+
+if __name__ == '__main__':
+    var_msg = 'Bienvenue au jeu de bataille navale !'
+    main()
