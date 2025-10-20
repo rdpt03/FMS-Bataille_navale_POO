@@ -158,7 +158,7 @@ def main():
     aircraft_carrier = Boat('aircraft_carrier')
 
     # define and add cases
-    aircraft_carrier.create_multiple_cases(['B2','C2','D2','E2','F2'])
+    aircraft_carrier.create_multiple_cases('B2','C2','D2','E2','F2')
 
 
     # cruiser
