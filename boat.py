@@ -9,8 +9,7 @@ class Boat:
         self.cases.append(case)
 
     def add_multiple_cases(self, cases_list : list):
-        for case in cases_list:
-            self.cases.append(case)
+        self.cases += cases_list
 
     def set_case(self, cases_list : list):
         self.cases = cases_list
