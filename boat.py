@@ -5,11 +5,21 @@ class Boat:
         self.name = name
 
 
+    #add
     def add_case(self, case : BoatCase):
         self.cases.append(case)
+
 
     def add_multiple_cases(self, cases_list : list):
         self.cases += cases_list
 
+
+    #creator
+    def create_multiple_cases(self, case_list : list):
+        for case_str in case_list:
+            self.cases.append(BoatCase(case_str))
+
+
+    #setter
     def set_case(self, cases_list : list):
         self.cases = cases_list
