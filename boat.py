@@ -15,8 +15,8 @@ class Boat:
 
 
     #creator
-    def create_multiple_cases(self, case_list : list):
-        for case_str in case_list:
+    def create_multiple_cases(self, *cases):
+        for case_str in cases:
             self.cases.append(BoatCase(case_str))
 
 
