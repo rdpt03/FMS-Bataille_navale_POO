@@ -1,28 +1,8 @@
 from copy import deepcopy
 import string
-#"lf" means local to function
-
-
-#define what is a boat :
-template_boat = {'name':'','cases':[]}
-template_boat_case = {'case_nb':'', 'hit':False}
-
-
-
-#function to add cases to boat
-def add_cases_to_boat(boat_lf, cases):
-    """
-    Function to add cases to the boat
-    :param boat_lf: the boat list
-    :param cases: the cases to add
-    """
-    for case_to_add in cases:
-        #copy the template boat case
-        boat_case = deepcopy(template_boat_case)
-        #add the case num to the case of the boar
-        boat_case['case_nb'] = case_to_add
-        #add the case of the boat to the boat case list
-        boat_lf['cases'].append(boat_case)
+from boat import Boat
+from boat_case import BoatCase
+#"lf" means local to function #TODO REMOVE IT
 
 
 def are_all_boat_sunk(boat_list_lf):
@@ -34,9 +14,9 @@ def are_all_boat_sunk(boat_list_lf):
     #for each boat
     for boat_lf in boat_list_lf:
         #for each case
-        for boat_case in boat_lf['cases']:
+        for boat_case in boat_lf.cases:
             #if the case is not hit (basically is false)
-            if not boat_case['hit']:
+            if not boat_case.hit:
                 return False
     #if all the cases are hit (are true, return true)
     return True
@@ -58,48 +38,42 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
     #foreach boat
     for boat_lf in boat_list_lf:
         #foreach case
-        for boat_case in boat_lf['cases']:
+        for boat_case in boat_lf.cases:
             #if the shot case is the same as the boat case
-            if boat_case['case_nb'] == shot_case:
+            if boat_case.case_nb == shot_case:
                 #if the case got already hit
-                if boat_case['hit']:
+                if boat_case.hit:
                     var_msg = 'Cette case à dejà été bombardée'
                     #get out of the function
                     return
                 #if not hit, hit it
                 else:
                     #form the message
-                    var_msg = "Le "+boat_lf["name"]+" à été bombardé!"
+                    var_msg = "Le "+boat_lf.name+" à été bombardé!"
                     #hit it
-                    boat_case['hit'] = True
+                    boat_case.hit = True
 
                     #add the shot to the list of shooted boats if not present
                     boat_shots.append(shot_case) if shot_case not in boat_shots else None
 
                     #if the boat got all the case hit
-                    if all(bcs['hit'] for bcs in boat_lf['cases']):
+                    if all(bcs.hit for bcs in boat_lf.cases):
                         #message
-                        var_msg += '\n Le '+boat_lf['name']+' vient de tomber'
+                        var_msg += '\n Le '+boat_lf.name+' vient de tomber'
 
                         #remove the cases from the shot list and add to the sunk list
-                        for case_lf in boat_lf['cases']:
-                            boat_shots.remove(case_lf['case_nb'])
-                            sunken_boats.append(case_lf['case_nb'])
+                        for case_lf in boat_lf.cases:
+                            boat_shots.remove(case_lf.case_nb)
+                            sunken_boats.append(case_lf.case_nb)
                     #exit the program
                     return
-    #if the hit failed (basicaccly no return where executed) (todo : test without condition alwasy to false
     failed_shots.append(shot_case) if shot_case not in failed_shots else None
     var_msg = 'Le tir est tompé dans l\'ocean'
 
 
 
 def render_table(failed_shots_lf, boat_shots_lf, sunken_boats):
-    #Create the table with panda
-    #create the dictionary base
 
-    #data = {
-    #    chr(c).upper() : ['' for _ in range(10)] for c in range(ord('a'),ord('j')+1)
-    #}
 
     data = {c: [''] * 10 for c in string.ascii_uppercase[:10]}
 
@@ -179,35 +153,33 @@ def main():
     boat_shots = []
 
     # define the boats
-    # aircraft_carrier
-    aircraft_carrier = deepcopy(template_boat)
-    aircraft_carrier['name'] = 'aircraft_carrier'
+    #POO
+    #create the aircraft carrier
+    aircraft_carrier = Boat('aircraft_carrier')
+
     # define and add cases
-    add_cases_to_boat(aircraft_carrier, ['B2', 'C2', 'D2', 'E2', 'F2'])
+    aircraft_carrier.create_multiple_cases(['B2','C2','D2','E2','F2'])
+
 
     # cruiser
-    cruiser = deepcopy(template_boat)
-    cruiser['name'] = 'cruiser'
+    cruiser = Boat('cruiser')
     # define and add cases
-    add_cases_to_boat(cruiser, ['A4', 'A5', 'A6', 'A7'])
+    cruiser.create_multiple_cases('A4','A5','A6','A7')
 
     # destroyer
-    destroyer = deepcopy(template_boat)
-    destroyer['name'] = 'destroyer'
+    destroyer = Boat('destroyer')
     # define and add cases
-    add_cases_to_boat(destroyer, ['C5', 'C6', 'C7'])
+    destroyer.create_multiple_cases('C5', 'C6', 'C7')
 
     # submarine
-    submarine = deepcopy(template_boat)
-    submarine['name'] = 'submarine'
+    submarine = Boat('submarine')
     # define and add cases
-    add_cases_to_boat(submarine, ['H5', 'I5', 'J5'])
+    submarine.create_multiple_cases('H5', 'I5', 'J5')
 
     # torpedo_boat
-    torpedo_boat = deepcopy(template_boat)
-    torpedo_boat['name'] = 'torpedo_boat'
+    torpedo_boat = Boat('torpedo_boat')
     # define and add cases
-    add_cases_to_boat(torpedo_boat, ['E9', 'F9'])
+    torpedo_boat.create_multiple_cases ('E9', 'F9')
 
     # execute in loop the game
     while True:
