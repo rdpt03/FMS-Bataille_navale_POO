@@ -43,7 +43,7 @@ def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, 
         #foreach case
         for boat_case in boat.cases:
             #if the shot case is the same as the boat case
-            if boat_case.case_nb == player_shot_try.case_nb:
+            if boat_case.nb == player_shot_try.nb:
                 #if the case got already hit
                 if boat_case.hit:
                     game_table.game_message = 'Cette case à dejà été bombardée'
@@ -67,7 +67,7 @@ def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, 
                         #remove the cases from the shot list and add to the sunk list
                         for case in boat.cases:
                             #remove from the shot boats (add back to list each boatcase if the boatcase name from boat_shots  is not the same as case name given by user)
-                            boat_shots = [bc for bc in boat_shots if bc.case_nb != case.case_nb]
+                            boat_shots = [bc for bc in boat_shots if bc.nb != case.nb]
                             #insert into sunken boats
                             sunken_boats.append(case)
                     #exit the program
