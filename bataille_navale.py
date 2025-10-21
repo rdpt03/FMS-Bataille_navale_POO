@@ -3,7 +3,7 @@ import string
 from boat import Boat
 from boat_case import BoatCase
 from typing import List
-#"lf" means local to function #TODO REMOVE IT
+
 
 
 def are_all_boat_sunk(boat_list):
