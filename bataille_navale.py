@@ -6,16 +6,16 @@ from typing import List
 #"lf" means local to function #TODO REMOVE IT
 
 
-def are_all_boat_sunk(boat_list_lf):
+def are_all_boat_sunk(boat_list):
     """
     Function to detect if all the boats are sunk and the game should finish
-    :param boat_list_lf: the list of boats in game
+    :param boat_list: the list of boats in game
     :return: boolean to check if the game should finish
     """
     #for each boat
-    for boat_lf in boat_list_lf:
+    for boat in boat_list:
         #for each case
-        for boat_case in boat_lf.cases:
+        for boat_case in boat.cases:
             #if the case is not hit (basically is false)
             if not boat_case.hit:
                 return False
@@ -23,10 +23,10 @@ def are_all_boat_sunk(boat_list_lf):
     return True
 
 
-def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boats, failed_shots):
+def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, failed_shots):
     """
     ths function will handle the hit to the boat
-    :param boat_list_lf:  list of boats
+    :param boat_list:  list of boats
     :param shot_case: the case attacked by the player
     :param boat_shots: list of all shot that landed on a boat
     :param sunken_boats: list of all sunken boats
@@ -38,9 +38,9 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
 
     player_shot_try = BoatCase(shot_case)
     #foreach boat
-    for boat_lf in boat_list_lf:
+    for boat in boat_list:
         #foreach case
-        for boat_case in boat_lf.cases:
+        for boat_case in boat.cases:
             #if the shot case is the same as the boat case
             if boat_case.case_nb == player_shot_try.case_nb:
                 #if the case got already hit
@@ -51,7 +51,7 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
                 #if not hit, hit it
                 else:
                     #form the message
-                    var_msg = "Le "+boat_lf.name+" à été bombardé!"
+                    var_msg = "Le "+boat.name+" à été bombardé!"
                     #hit it
                     boat_case.hit = True
 
@@ -59,16 +59,16 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
                     boat_shots.append(player_shot_try) if not player_shot_try.in_list(boat_shots) else None
 
                     #if the boat got all the case hit
-                    if all(bcs.hit for bcs in boat_lf.cases):
+                    if all(bcs.hit for bcs in boat.cases):
                         #message
-                        var_msg += '\n Le '+boat_lf.name+' vient de tomber'
+                        var_msg += '\n Le '+boat.name+' vient de tomber'
 
                         #remove the cases from the shot list and add to the sunk list
-                        for case_lf in boat_lf.cases:
+                        for case in boat.cases:
                             #remove from the shot boats (add back to list each boatcase if the boatcase name from boat_shots  is not the same as case name given by user)
-                            boat_shots = [bc for bc in boat_shots if bc.case_nb != case_lf.case_nb]
+                            boat_shots = [bc for bc in boat_shots if bc.case_nb != case.case_nb]
                             #insert into sunken boats
-                            sunken_boats.append(case_lf)
+                            sunken_boats.append(case)
                     #exit the program
                     return
     failed_shots.append(player_shot_try) if not player_shot_try.in_list(failed_shots) else None
@@ -77,7 +77,7 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
 
 
 
-def render_table(failed_shots_lf, boat_shots_lf, sunken_boats):
+def render_table(failed_shots, boat_shots, sunken_boats):
 
 
     data = {c: [''] * 10 for c in string.ascii_uppercase[:10]}
@@ -85,11 +85,11 @@ def render_table(failed_shots_lf, boat_shots_lf, sunken_boats):
 
 
     #add the failed shots to it
-    for fs in failed_shots_lf:
+    for fs in failed_shots:
         data[fs.case_nb[0].upper()][int(fs.case_nb[1:])-1] = "x"
 
     #add the boat shots to it
-    for bs in boat_shots_lf:
+    for bs in boat_shots:
         data[bs.case_nb[0].upper()][int(bs.case_nb[1:])-1] = "#"
 
     #add the sunk boat to it
@@ -207,13 +207,13 @@ def main():
         ):
 
             # create boat list
-            boatlist = [aircraft_carrier, cruiser, destroyer, submarine, torpedo_boat]
+            boat_list = [aircraft_carrier, cruiser, destroyer, submarine, torpedo_boat]
 
             # check a boat at this case and if present hit it
-            check_and_hit_boat_position(boatlist, case, boat_shots, sunken_boats, failed_shots)
+            check_and_hit_boat_position(boat_list, case, boat_shots, sunken_boats, failed_shots)
 
             # check if all boats are sunk
-            if are_all_boat_sunk(boatlist):
+            if are_all_boat_sunk(boat_list):
                 print('Bravo! vous avez detruit tous les bateaux')
                 break
         # given any irregular case
