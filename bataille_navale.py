@@ -1,9 +1,10 @@
+import time
 from copy import deepcopy
 import string
 from boat import Boat
 from boat_case import BoatCase
 from typing import List
-
+from table_viewer import TableViewer
 
 
 def are_all_boat_sunk(boat_list):
@@ -34,7 +35,7 @@ def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, 
     :return: n/a
     """
     #get global var
-    global var_msg
+    #global var_msg
 
     player_shot_try = BoatCase(shot_case)
     #foreach boat
@@ -45,13 +46,13 @@ def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, 
             if boat_case.case_nb == player_shot_try.case_nb:
                 #if the case got already hit
                 if boat_case.hit:
-                    var_msg = 'Cette case à dejà été bombardée'
+                    game_table.game_message = 'Cette case à dejà été bombardée'
                     #get out of the function
                     return
                 #if not hit, hit it
                 else:
                     #form the message
-                    var_msg = "Le "+boat.name+" à été bombardé!"
+                    game_table.game_message = "Le "+boat.name+" à été bombardé!"
                     #hit it
                     boat_case.hit = True
 
@@ -61,7 +62,7 @@ def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, 
                     #if the boat got all the case hit
                     if all(bcs.hit for bcs in boat.cases):
                         #message
-                        var_msg += '\n Le '+boat.name+' vient de tomber'
+                        game_table.game_message += '\n Le '+boat.name+' vient de tomber'
 
                         #remove the cases from the shot list and add to the sunk list
                         for case in boat.cases:
@@ -73,84 +74,12 @@ def check_and_hit_boat_position(boat_list, shot_case, boat_shots, sunken_boats, 
                     return
     failed_shots.append(player_shot_try) if not player_shot_try.in_list(failed_shots) else None
 
-    var_msg = 'Le tir est tompé dans l\'ocean'
-
-
-
-def render_table(failed_shots, boat_shots, sunken_boats):
-
-
-    data = {c: [''] * 10 for c in string.ascii_uppercase[:10]}
-
-
-
-    #add the failed shots to it
-    for fs in failed_shots:
-        data[fs.case_nb[0].upper()][int(fs.case_nb[1:])-1] = "x"
-
-    #add the boat shots to it
-    for bs in boat_shots:
-        data[bs.case_nb[0].upper()][int(bs.case_nb[1:])-1] = "#"
-
-    #add the sunk boat to it
-    for sb in sunken_boats:
-        data[sb.case_nb[0].upper()][int(sb.case_nb[1:])-1] = "O"
-
-    table_boat = ""
-
-
-    #generate table dynamically
-    #each line of it
-    for i in range(10+1):
-        #first line
-        table_boat += "+---"*11+"+\n"
-
-        #part 1 generate the indexes
-        #add the first number
-        # add empty space for the first line
-        if i==0:
-            table_boat += "|   |"
-        # special to print 10 without extra space
-        elif i==10:
-            table_boat += "| " + str(i) + "|"
-        #add the number for the line
-        else:
-            table_boat += "| " + str(i) + " |"
-
-        #part 2 generate the caracters line only for first line
-        #all the nexts lines
-        if i==0:
-            #create a list from A to J and then go throught all letters
-            for c in string.ascii_uppercase[:10]:
-                table_boat += " "+c+" |"
-            table_boat += "\n"
-        #part 3 generate the playable/played cases
-        #for all others line exept line 0/first line
-        if i>0:
-            #create a list from A to J and then go throught all letters
-            for c in string.ascii_uppercase[:10]:
-                #get the cases for the letter
-                case = data[c]
-
-                #if the case empty add empty space
-                if case[i-1] == "":
-                    table_boat += "   |"
-                #not empty : add the character to game
-                else:
-                    table_boat += " "+case[i-1]+" |"
-                    #line break
-            table_boat += "\n"
-    #last line
-    table_boat += "+---" * 11 + "+"
-
-    #print with pandas
-    print(table_boat)
+    game_table.game_message = 'Le tir est tompé dans l\'ocean'
 
 
 def main():
-    # declare a global var to the message to the user and set initial text
-    global var_msg
-    #var_msg = 'Bienvenue au jeu de bataille navale !'
+    #set initial message
+    game_table.game_message = 'Bienvenue au jeu de bataille navale !'
 
     # define the list for the shots
     failed_shots : List[BoatCase] = []
@@ -158,10 +87,8 @@ def main():
     boat_shots : List[BoatCase] = []
 
     # define the boats
-    #POO
     #create the aircraft carrier
     aircraft_carrier = Boat('aircraft_carrier')
-
     # define and add cases
     aircraft_carrier.create_multiple_cases('B2','C2','D2','E2','F2')
 
@@ -188,12 +115,17 @@ def main():
 
     # execute in loop the game
     while True:
-        # render the table with all shots
-        render_table(failed_shots, boat_shots, sunken_boats)
+        #update the table
+        game_table.update_table(failed_shots, boat_shots, sunken_boats)
+        #render the table
+        print(game_table.render())
+
+
         # game message
-        print('JEU : ' + var_msg)
-        var_msg = 'n/a'
+        game_table.game_message = 'n/a'
+
         print('-' * 30)
+
         # input
         case = input('Inserer la case à ataquer : ').upper()
 
@@ -214,13 +146,17 @@ def main():
 
             # check if all boats are sunk
             if are_all_boat_sunk(boat_list):
-                print('Bravo! vous avez detruit tous les bateaux')
+                game_table.update_table(failed_shots, boat_shots, sunken_boats)
+                game_table.game_message += 'Bravo! vous avez detruit tous les bateaux'
+                print(game_table.render())
                 break
         # given any irregular case
         else:
-            var_msg = 'case incorrecte'
+            game_table.game_message = 'case incorrecte'
 
 
 if __name__ == '__main__':
-    var_msg = 'Bienvenue au jeu de bataille navale !'
+    #create a table POO
+    game_table = TableViewer()
+    game_table.game_message = 'Bienvenue au jeu de bataille navale !'
     main()
