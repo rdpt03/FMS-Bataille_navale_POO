@@ -2,6 +2,7 @@ from copy import deepcopy
 import string
 from boat import Boat
 from boat_case import BoatCase
+from typing import List
 #"lf" means local to function #TODO REMOVE IT
 
 
@@ -29,18 +30,19 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
     :param shot_case: the case attacked by the player
     :param boat_shots: list of all shot that landed on a boat
     :param sunken_boats: list of all sunken boats
-    :param failed_shots: list of failed shots that landed on the sea
+    :param failed_shots: list of objects of failed shots that landed on the sea
     :return: n/a
     """
     #get global var
     global var_msg
 
+    player_shot_try = BoatCase(shot_case)
     #foreach boat
     for boat_lf in boat_list_lf:
         #foreach case
         for boat_case in boat_lf.cases:
             #if the shot case is the same as the boat case
-            if boat_case.case_nb == shot_case:
+            if boat_case.case_nb == player_shot_try.case_nb:
                 #if the case got already hit
                 if boat_case.hit:
                     var_msg = 'Cette case à dejà été bombardée'
@@ -54,7 +56,7 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
                     boat_case.hit = True
 
                     #add the shot to the list of shooted boats if not present
-                    boat_shots.append(shot_case) if shot_case not in boat_shots else None
+                    boat_shots.append(player_shot_try) if not player_shot_try.in_list(boat_shots) else None
 
                     #if the boat got all the case hit
                     if all(bcs.hit for bcs in boat_lf.cases):
@@ -63,11 +65,14 @@ def check_and_hit_boat_position(boat_list_lf, shot_case, boat_shots, sunken_boat
 
                         #remove the cases from the shot list and add to the sunk list
                         for case_lf in boat_lf.cases:
-                            boat_shots.remove(case_lf.case_nb)
-                            sunken_boats.append(case_lf.case_nb)
+                            #remove from the shot boats (add back to list each boatcase if the boatcase name from boat_shots  is not the same as case name given by user)
+                            boat_shots = [bc for bc in boat_shots if bc.case_nb != case_lf.case_nb]
+                            #insert into sunken boats
+                            sunken_boats.append(case_lf)
                     #exit the program
                     return
-    failed_shots.append(shot_case) if shot_case not in failed_shots else None
+    failed_shots.append(player_shot_try) if not player_shot_try.in_list(failed_shots) else None
+
     var_msg = 'Le tir est tompé dans l\'ocean'
 
 
@@ -81,15 +86,15 @@ def render_table(failed_shots_lf, boat_shots_lf, sunken_boats):
 
     #add the failed shots to it
     for fs in failed_shots_lf:
-        data[fs[0].upper()][int(fs[1:])-1] = "x"
+        data[fs.case_nb[0].upper()][int(fs.case_nb[1:])-1] = "x"
 
     #add the boat shots to it
     for bs in boat_shots_lf:
-        data[bs[0].upper()][int(bs[1:])-1] = "#"
+        data[bs.case_nb[0].upper()][int(bs.case_nb[1:])-1] = "#"
 
     #add the sunk boat to it
     for sb in sunken_boats:
-        data[sb[0].upper()][int(sb[1:])-1] = "O"
+        data[sb.case_nb[0].upper()][int(sb.case_nb[1:])-1] = "O"
 
     table_boat = ""
 
@@ -148,9 +153,9 @@ def main():
     #var_msg = 'Bienvenue au jeu de bataille navale !'
 
     # define the list for the shots
-    failed_shots = []
-    sunken_boats = []
-    boat_shots = []
+    failed_shots : List[BoatCase] = []
+    sunken_boats : List[BoatCase] = []
+    boat_shots : List[BoatCase] = []
 
     # define the boats
     #POO
