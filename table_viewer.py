@@ -8,15 +8,15 @@ class TableViewer:
     def update_table(self, failed_shots, boat_shots, sunken_boats):
         # add the failed shots to it
         for fs in failed_shots:
-            self.data[fs.case_nb[0].upper()][int(fs.case_nb[1:]) - 1] = "x"
+            self.data[fs.nb[0].upper()][int(fs.nb[1:]) - 1] = "x"
 
         # add the boat shots to it
         for bs in boat_shots:
-            self.data[bs.case_nb[0].upper()][int(bs.case_nb[1:]) - 1] = "#"
+            self.data[bs.nb[0].upper()][int(bs.nb[1:]) - 1] = "#"
 
         # add the sunk boat to it
         for sb in sunken_boats:
-            self.data[sb.case_nb[0].upper()][int(sb.case_nb[1:]) - 1] = "O"
+            self.data[sb.nb[0].upper()][int(sb.nb[1:]) - 1] = "O"
 
 
     def render(self):
@@ -65,5 +65,6 @@ class TableViewer:
                 table_boat += "\n"
         # last line
         table_boat += "+---" * 11 + "+\nJeu: " + self.game_message
-
+        #clear game_message
+        self.game_message = ""
         return table_boat
